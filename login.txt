@@ -1,0 +1,6 @@
+user user@example.com
+pswd hunter2
+customer 12345
+electric 123ABC456
+water 112358
+gas 8675309
