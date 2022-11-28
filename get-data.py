@@ -53,13 +53,32 @@ def get24hData(br, customer, meter, met_type, y, m, d):
     #return the important array
     return data['data']['usage']
 
+def calcHeatingDegreeHours(data):
+    result =[]
+    for i in range(1,len(data)):
+        hours = (int(data[2][0]) - int(data[1][0]))/(3600000.0)
+        tdiff = 68.0 - max(0,float(data[i][2]))
+        result.append(hours * tdiff)
+    return result
+
+def calcHeatingDegreeHoursPerKWH(elecData, hdh):
+    result = []
+    for i in range(len(hdh)):
+        kwh = float(elecData[i+1][1])
+        print(kwh, hdh[i])
+        result.append(hdh[i]/kwh)
+    return result
 
 auth = getAccountAttributes()
 br = initBrowser(auth)
 
 if 'electric' in auth:
-    print(get24hData(br, auth['customer'], auth['electric'], 'electric', 2022, 11, 1))
-if 'water' in auth:
-    print(get24hData(br, auth['customer'], auth['water'], 'water', 2022, 11, 1))
-if 'gas' in auth:
-    print(get24hData(br, auth['customer'], auth['gas'], 'gas', 2022, 11, 1))
+    elecData = get24hData(br, auth['customer'], auth['electric'], 'electric', 2022, 11, 17)
+    hdh = calcHeatingDegreeHours(elecData)
+    print(hdh)
+    hdh_per_kwh = calcHeatingDegreeHoursPerKWH(elecData, hdh)
+    print(hdh_per_kwh)
+#if 'water' in auth:
+#    print(get24hData(br, auth['customer'], auth['water'], 'water', 2022, 11, 1))
+#if 'gas' in auth:
+#    print(get24hData(br, auth['customer'], auth['gas'], 'gas', 2022, 11, 1))
